@@ -8,14 +8,31 @@
 </head>
 <body>
     <div class="container">
-        <h1>News Classification</h1>
+        <h1>Twitter / URL Fake News Detection</h1>
+        {% if model_version %}
+        <p class="meta">Model: <strong>{{ model_version }}</strong></p>
+        {% endif %}
+        {% if model_metrics %}
+        <p class="meta">Validation - Accuracy: {{ '%.2f'|format(model_metrics.accuracy * 100) }}%, F1: {{ '%.2f'|format(model_metrics.f1 * 100) }}%</p>
+        {% endif %}
+
         <form method="POST" action="/predict">
-            <label for="news_text">Enter News Text:</label><br>
-            <textarea id="news_text" name="news_text" rows="4" cols="50" required>{{ news_text }}</textarea><br><br>
+            <label for="news_url">Tweet/Article URL (optional):</label><br>
+            <input id="news_url" name="news_url" type="url" placeholder="https://x.com/user/status/... or article URL" value="{{ news_url }}" style="width:100%"><br><br>
+
+            <label for="news_text">Enter news text (optional if URL is provided):</label><br>
+            <textarea id="news_text" name="news_text" rows="5" cols="50">{{ news_text }}</textarea><br><br>
+
             <input type="submit" value="Classify">
         </form>
+
+        {% if extracted_text %}
+        <p class="meta"><strong>Extracted from URL:</strong> {{ extracted_text[:350] }}{% if extracted_text|length > 350 %}...{% endif %}</p>
+        {% endif %}
+
         {% if prediction %}
         <h2>Prediction: {{ prediction }}</h2>
+        {% if confidence %}<p class="meta">Confidence: {{ confidence }}</p>{% endif %}
         {% endif %}
     </div>
 </body>
